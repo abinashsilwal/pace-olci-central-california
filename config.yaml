@@ -1,0 +1,54 @@
+# PACE OCI vs Sentinel-3 OLCI (OB.DAAC l2gen) -- central California coast
+# Edit this file; every pipeline step reads it.
+
+study_area:
+  # Monterey Bay to Santa Barbara Channel (incl. Pt Conception)
+  lat_min: 33.9
+  lat_max: 37.0
+  lon_min: -123.5
+  lon_max: -119.0
+
+date_range: [2024-04-01, 2026-09-30]   # used by `find_dates`
+dates: ["2024-04-06", "2024-05-08", "2024-06-17", "2024-08-20", "2024-09-01", "2024-10-19", "2024-11-08", "2024-12-19", "2025-01-27", "2025-02-26", "2025-03-18", "2025-04-09", "2025-05-10", "2025-08-05", "2025-10-10", "2025-11-22", "2025-12-11", "2026-01-09", "2026-02-28", "2026-03-12", "2024-04-01", "2024-04-29", "2024-08-15", "2024-10-02", "2024-10-30", "2024-12-01", "2024-12-09", "2025-01-05", "2025-01-12", "2025-03-08", "2025-03-24", "2025-04-04", "2025-05-21", "2025-08-19", "2025-08-27", "2025-10-28", "2025-12-29", "2026-01-14", "2026-02-04", "2026-03-07"]   # first 20: best day per month; last 20: same rule, >=5 days from chosen days
+
+# Short names are as listed at OB.DAAC / earthdata. Run `python run.py discover`
+# to print what earthaccess can see, and fix names here if any search returns 0.
+products:
+  pace_aop:  {short_name: PACE_OCI_L2_AOP}
+  pace_bgc:  {short_name: PACE_OCI_L2_BGC}
+  olci_3a:   {short_name: OLCIS3A_L2_EFR_OC}   # 300 m, aggregated to the grid
+  olci_3b:   {short_name: OLCIS3B_L2_EFR_OC}
+
+# Nominal OLCI band centres (nm). PACE uses nearest band (or boxcar mean).
+wavelengths: [400, 412.5, 442.5, 490, 510, 560, 620, 665, 673.75, 681.25, 708.75]   # OLCI band centres (all 11 bands)
+primary_bands: [442.5, 490, 560, 665]   # bands reported in the main text
+pace_band_mode: boxcar        # nearest | boxcar
+pace_boxcar_nm: 10            # OLCI bandwidth ~10 nm
+
+grid:
+  res_deg: 0.02               # common grid, ~2.2 km (>=2 PACE pixels/cell); both sensors box-averaged onto it
+
+qc:
+  min_olci_pixels_per_cell: 1
+  chl_range: [0.01, 100]      # mg m-3, pixel-level plausibility filter (both sensors)
+  rrs_max: 0.03               # sr-1, pixel-level upper bound (lower bound: > 0)
+  pace_fill_km: 3.5           # empty cells take the nearest valid PACE pixel within this distance (swath-edge pixels are up to ~5 km)
+  keep_raw: true              # keep downloaded granules (needed for diagnostics)
+  min_common_cells: 500       # date needs >= this many co-valid cells to be used
+  exclude_coast_km: 2         # drop cells closer than this to land
+  zones_km: [10, 50]          # nearshore <10, shelf 10-50, offshore >50
+
+stats:
+  chl_log10: true
+  n_bootstrap: 1000           # bootstrap over DATES (pixels are autocorrelated)
+
+transects:                    # lon/lat start-end, nearshore -> offshore
+  - {name: MontereyBay, start: [-121.85, 36.80], end: [-122.80, 36.60]}
+  - {name: BigSur,      start: [-121.90, 36.20], end: [-122.80, 36.00]}
+  - {name: PtConception,start: [-120.50, 34.45], end: [-121.30, 34.10]}
+
+paths:
+  raw: data/raw
+  processed: data/processed
+  out: outputs
+

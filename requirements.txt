@@ -1,0 +1,12 @@
+numpy
+pandas
+scipy
+xarray
+netCDF4
+pyyaml
+matplotlib
+cartopy
+shapely
+pyproj
+requests
+earthaccess
