@@ -17,7 +17,7 @@ Code for the comparison of PACE OCI and Sentinel-3 OLCI remote-sensing reflectan
 
 ## Requirements
 
-Python 3.10 or later and the packages in `requirements.txt`. Downloading the satellite granules needs a free NASA Earthdata account (`earthaccess` reads credentials from the environment variables `EARTHDATA_USERNAME` and `EARTHDATA_PASSWORD`, or from `~/.netrc`).
+Python 3.11 and the package versions pinned in `requirements.txt` (the versions used for the paper). Downloading the satellite granules needs a free NASA Earthdata account (`earthaccess` reads credentials from the environment variables `EARTHDATA_USERNAME` and `EARTHDATA_PASSWORD`, or from `~/.netrc`).
 
 ## Usage
 
